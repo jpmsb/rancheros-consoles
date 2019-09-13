@@ -6,7 +6,7 @@ Alternative consoles for RancherOS
     rancher:
       repositories:
         consoles:
-          url: https://raw.githubusercontent.com/jpmsb/rancheros-consoles/v1.5.x
+          url: https://raw.githubusercontent.com/jpmsb/rancheros-consoles/buster-beowulf
       services_include:
         kernel-extras: true
         kernel-headers: true
