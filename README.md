@@ -1,5 +1,5 @@
 # RancherOS alternative consoles
-Alternative consoles for RancherOS
+Alternative consoles for RancherOS which provides extra tools and even a Desktop Environment out of the box.
 
 # Adding this repository in Cloud Config
 
