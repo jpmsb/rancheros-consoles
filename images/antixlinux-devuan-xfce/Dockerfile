@@ -26,6 +26,23 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo "deb http://deb.devuan.org/merged beowulf-updates main contrib non-free" >> /etc/apt/sources.list && \
     echo "deb http://deb.devuan.org/merged beowulf-security main contrib non-free" >> /etc/apt/sources.list && \
     echo "deb http://deb.devuan.org/merged beowulf-proposed-updates main contrib non-free" >> /etc/apt/sources.list && \
+    echo "# deb http://deb.devuan.org/merged ascii main" > /etc/apt/sources.list.d/devuan-ascii.list && \
+    \
+    # Adicioanando repositorio do Google Chrome
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
+    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    \
+    # Adicionando o repositorio do Vivaldi
+    echo "deb http://repo.vivaldi.com/stable/deb/ stable main" > /etc/apt/sources.list.d/vivaldi.list && \
+    wget -O - http://repo.vivaldi.com/stable/linux_signing_key.pub | apt-key add - && \
+    \
+    # Adicionando o respositorio do Opera
+    echo "deb https://deb.opera.com/opera-stable/ stable non-free" > /etc/apt/sources.list.d/opera-stable.list && \
+    wget -q -O - https://deb.opera.com/archive.key | apt-key add - && \
+    \
+    # Adicionando o repositorio do VirtualBox
+    echo "deb https://download.virtualbox.org/virtualbox/debian buster contrib" > /etc/apt/sources.list.d/virtualbox.list && \
+    wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | apt-key add - && \
     \
     # Adicionando arquitetura 32 bits
     dpkg --add-architecture i386 && \
@@ -48,7 +65,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                        iptraf telnet wireshark aptitude aptitude-robot rsyslog hunspell hunspell-pt-br \
                        aspell-pt-br libreoffice-lightproof-pt-br galculator disk-manager geoclue-2.0 \
                        fbcat lm-sensors terminator sox libsox-fmt-all alsa-utils paprefs prevent-systemd \
-                       adb android-libadb android-tools-adb android-tools-adbd vlc-plugin-access-extra && \
+                       adb android-libadb android-tools-adb android-tools-adbd vlc-plugin-access-extra \ 
+                       packagekit-command-not-found apper packagekit-tools && \
     \
     # Instalando o lightdm
     apt -y -q install --no-install-recommends lightdm lightdm-gtk-greeter-settings && \
@@ -371,7 +389,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo "service cups-browsed start" >> /usr/local/bin/iniciar-tudo && \
     echo "modprobe -r evbug" >> /usr/local/bin/iniciar-tudo && \
     echo 'echo "0 2147483647" > /proc/sys/net/ipv4/ping_group_range' >> /usr/local/bin/iniciar-tudo && \
-    echo "cron" >> /usr/local/bin/iniciar-tudo && \
+    echo "service cron start" >> /usr/local/bin/iniciar-tudo && \
     echo "ntpd" >> /usr/local/bin/iniciar-tudo && \
     echo 'sleep 2 && bash -c "/etc/init.d/lightdm start" &' >> /usr/local/bin/iniciar-tudo && \
     echo "ros console-init" >> /usr/local/bin/iniciar-tudo && \
