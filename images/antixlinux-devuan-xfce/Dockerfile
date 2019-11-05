@@ -7,18 +7,21 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     # Instalando o ca-certificates e adicionando as chaves
     apt update && \
     apt -y -q install ca-certificates wget gnupg1 && \
-    wget http://repo.antixlinux.com/buster/pool/main/a/antix-archive-keyring/antix-archive-keyring_20019.3.13_all.deb -O /antix-archive-keyring.deb && \
+    wget https://mxlinux.unc.edu.ar/mxlinux/antix/buster/pool/main/a/antix-archive-keyring/antix-archive-keyring_20019.3.13_all.deb -O /antix-archive-keyring.deb && \
     dpkg -i /antix-archive-keyring.deb && \
     rm -f /antix-archive-keyring.deb && \
     \
     # Adicionando repositorios do antiX Linux
-    echo "deb https://mxlinux.c3sl.ufpr.br/mx-workspace/antix/buster/ buster main nosystemd nonfree" > /etc/apt/sources.list && \
+    echo "# AntiX Linux" > /etc/apt/sources.list && \
+    echo "deb https://mxlinux.c3sl.ufpr.br/mx-workspace/antix/buster/ buster main nosystemd nonfree" >> /etc/apt/sources.list && \
+    echo "" >> /etc/apt/sources.list && \
     \
     # Adicionando repositorios do Devuan
     wget https://devuan.org/os/keyring/repository@devuan.org.asc -O - | apt-key add - && \
     wget http://deb.devuan.org/devuan/pool/main/d/devuan-keyring/devuan-keyring_2017.10.03_all.deb -O /keyring.deb && \
     dpkg -i /keyring.deb && \
-    rm -r /keyring.deb && \ 
+    rm -r /keyring.deb && \
+    echo "# Devuan Beowulf <3" >> /etc/apt/sources.list && \
     echo "deb http://deb.devuan.org/merged beowulf main contrib non-free" >> /etc/apt/sources.list && \
     echo "deb http://deb.devuan.org/merged beowulf-updates main contrib non-free" >> /etc/apt/sources.list && \
     echo "deb http://deb.devuan.org/merged beowulf-security main contrib non-free" >> /etc/apt/sources.list && \
@@ -33,18 +36,25 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     \
     # Instalando alguns pacotes iniciais
     apt-get install -y iptables openssh-server rsync locales sudo vim less curl ca-certificates \
-                       psmisc htop kmod iproute2 net-tools gnupg1 wget cron bridge-utils \
+                       psmisc htop kmod iproute2 net-tools gnupg1 wget cron bridge-utils iw \
                        consolekit pulseaudio usbutils pciutils ntp chromium g++ audacity flatpak \
                        chromium-l10n iputils-ping nload nmap whois netcat pavucontrol vlc etherwake \
                        x2goclient ffmpeg curl dialog gdb pulseaudio-equalizer qasmixer qashctl \
-                       qasconfig wine32 winetricks git cmake rtl-sdr dirmngr libelf-dev xterm \
+                       qasconfig wine32 winetricks git cmake rtl-sdr dirmngr libelf-dev xterm mtp-tools \
                        virt-manager qemu unrar lzop bzip2 libvirt0 libvirt-daemon-system dnsutils \
                        qemu qemu-kvm qemu-utils gvfs-backends nomacs nomacs-l10n openresolv cups \ 
                        apt-transport-https fonts-noto fonts-roboto-hinted gdebi apt-utils libglib2.0-bin \
                        xscreensaver-screensaver-bsod arp-scan speedtest-cli tcpdump traceroute iperf \
                        iptraf telnet wireshark aptitude aptitude-robot rsyslog hunspell hunspell-pt-br \
                        aspell-pt-br libreoffice-lightproof-pt-br galculator disk-manager geoclue-2.0 \
-                       fbcat lm-sensors terminator sox libsox-fmt-all alsa-utils paprefs prevent-systemd && \
+                       fbcat lm-sensors terminator sox libsox-fmt-all alsa-utils paprefs prevent-systemd \
+                       adb android-libadb android-tools-adb android-tools-adbd vlc-plugin-access-extra \
+                       policykit-1-gnome gnome-packagekit unattended-upgrades apt-listchanges wireless-tools \
+                       oxygencursors xcursor-themes big-cursor breeze-amber-cursor-theme-antix \
+                       chameleon-cursor-theme comixcursors-lefthanded comixcursors-lefthanded-opaque \
+                       comixcursors-righthanded comixcursors-righthanded-opaque crystalcursors android-tools-fastboot \
+                       wonderland-cursor-theme-antix paper-cursor-theme idevice-mounter ideviceinstaller iotop \
+                       gstreamer1.0-pulseaudio okular kcolorchooser kolourpaint && \
     \
     # Instalando o lightdm
     apt -y -q install --no-install-recommends lightdm lightdm-gtk-greeter-settings && \
@@ -54,9 +64,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     \
     # Alguns aplicativos do MATE
     apt -y -q install --no-install-recommends mate-system-monitor engrampa pluma && \
-    \
     # Alguns aplicativos do KDE
-    apt -y -q install --no-install-recommends okular kcolorchooser kolourpaint && \
+    # apt -y -q install --no-install-recommends okular kcolorchooser kolourpaint && \
     \
     # Instalando o LibreOffice e compilador de Go
     apt -y -q install libreoffice libreoffice-l10n-pt-br libreoffice-help-pt-br libreoffice-officebean libreoffice-avmedia-backend-vlc libreoffice-gtk3 libreoffice-pdfimport libreoffice-subsequentcheckbase golang hplip hplip-data && \
@@ -83,8 +92,18 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     # Ativando a biblioteca libdvdnss
     dpkg-reconfigure debconf -f noninteractive libdvd-pkg && \
     \
-    # Adicionar repositorio flathub ao flatpak
+    # Adicionar repositorio flathub e kdeapps ao flatpak
     flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo && \
+    flatpak remote-add --if-not-exists kdeapps https://distribute.kde.org/kdeapps.flatpakrepo && \
+    \
+    # Alguns aplicativos do KDE
+    # flatpak install -y --noninteractive flathub org.kde.okular && \
+    # flatpak install -y --noninteractive kdeapps org.kde.kolourpaint && \
+    # flatpak install -y --noninteractive kdeapps org.kde.kcolorchooser && \
+    \
+    # Instalando o dry (uma linha de comando alternativa para o Docker)
+    curl -sSf https://moncho.github.io/dry/dryup.sh | sh && \
+    chmod 755 /usr/local/bin/dry && \
     \
     # Instalando o tema Adapta
     wget jpmsb.sj.ifsc.edu.br/adapta.tar.xz -O /adapta.tar.xz && \
@@ -111,7 +130,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     \
     # Plano de fundo do lightdm
     wget http://jpmsb.sj.ifsc.edu.br/rancher-os-wallpaper.png -O /usr/share/images/rancher-os-wallpaper.png && \
-    sed -i '/#background=/c\background = /usr/share/images/rancher-os-wallpaper.png' /etc/lightdm/lightdm-gtk-greeter.conf && \
+    update-alternatives --install /usr/share/images/desktop-base/desktop-lightdm-background desktop-lightdm-background /usr/share/images/rancher-os-wallpaper.png 0 && \
+    update-alternatives --set desktop-lightdm-background /usr/share/images/rancher-os-wallpaper.png && \
     \
     # Instalar o Webmin
     rm /etc/apt/apt.conf.d/docker-gzip-indexes && \
@@ -246,10 +266,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     # Remover o pacote light-locker para previnir que a tela deixe de ser exibida ao retornar no bloqueio do lightdm
     apt -y -q purge light-locker && \
     \
-    # Fazendo uma limpeza
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/* /root/.bash_history && \
-    rm -rf /etc/ssh/*key* && \
-    \
     # Gambiarra para o ps
     ln -s /bin/ps /usr/bin/ps && \
     \
@@ -272,15 +288,17 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo '## allow password less for docker user' >> /etc/sudoers && \
     echo 'docker ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers && \
     \
-    # Ajustes no libvirt, adduser, autostart do pulseaudio
+    # Ajustes no libvirt, adduser, autostart do pulseaudio e nm-applet
     sed -i '105s/.*/greeter-hide-users=false/' /etc/lightdm/lightdm.conf && \
     sed -i '85s/.*/unix_sock_group = "rancher"/' /etc/libvirt/libvirtd.conf && \
     sed -i '102s/.*/unix_sock_rw_perms = "0770"/' /etc/libvirt/libvirtd.conf && \
     sed -i '6s:.*:DSHELL=/usr/bin/fish:' /etc/adduser.conf && \
     sed -i '77s:.*:EXTRA_GROUPS="dialout cdrom audio video plugdev netdev sudo":' /etc/adduser.conf && \
     sed -i '81s:.*:ADD_EXTRA_GROUPS=1:' /etc/adduser.conf && \
-    sed -i 's.; default-sample-format = s16le.default-sample-format = float32le.g' /etc/pulse/daemon.conf && \
+    # sed -i 's.; default-sample-format = s16le.default-sample-format = float32le.g' /etc/pulse/daemon.conf && \
+    sed -i 's.; flat-volumes = yes.flat-volumes = no.g' /etc/pulse/daemon.conf && \
     sed -i 's.Exec=start-pulseaudio-x11.Exec=pulseaudio.g' /etc/xdg/autostart/pulseaudio.desktop && \
+    # sed -i 's.Exec=nm-applet.Exec=nm-applet -9.g' /etc/xdg/autostart/nm-applet.desktop && \
     \
     # Regra para o login1
     echo "[Login1]" > /etc/polkit-1/localauthority/50-local.d/23-org.freedesktop.login1.pkla && \
@@ -316,18 +334,24 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     bash -c "echo -e 'LANG="pt_BR.UTF-8"\nLANGUAGE="pt_BR:br"\n'" > /etc/default/locale && \
     \
     # Adicionando a logo do RancherOS quando se faz SSH
-    echo -n "#!/bin/bash\n\ncat << \EOF\n               ,        , ______                 _                 _____ _____TM\n  ,------------|'------'| | ___ \               | |               /  _  /  ___|\n / .           '-'    |-  | |_/ /__ _ _ __   ___| |__   ___ _ __  | | | \ '--.\n \/|             |    |   |    // _' | '_ \ / __| '_ \ / _ \ '__' | | | |'--. \ \n   |   .________.'----'   | |\ \ (_| | | | | (__| | | |  __/ |    | \_/ /\__/ /\n   |   |        |   |     \_| \_\__,_|_| |_|\___|_| |_|\___|_|     \___/\____/\nEOF\n\ncat << EOF\n   \___/        \___/     Linux \$(uname -r)\n\n         RancherOS \$(uname -v) \$(hostname)\nEOF" > /etc/update-motd.d/00-header && \
-    chmod +x /etc/update-motd.d/00-header && \
+    mkdir -p /etc/welcome/ && \
+    echo -n "#!/bin/bash\n\ncat << \EOF\n               ,        , ______                 _                 _____ _____TM\n  ,------------|'------'| | ___ \               | |               /  _  /  ___|\n / .           '-'    |-  | |_/ /__ _ _ __   ___| |__   ___ _ __  | | | \ '--.\n \/|             |    |   |    // _' | '_ \ / __| '_ \ / _ \ '__' | | | |'--. \ \n   |   .________.'----'   | |\ \ (_| | | | | (__| | | |  __/ |    | \_/ /\__/ /\n   |   |        |   |     \_| \_\__,_|_| |_|\___|_| |_|\___|_|     \___/\____/\nEOF\n\ncat << EOF\n   \___/        \___/     Linux \$(uname -r)\n\n         RancherOS \$(uname -v) \$(hostname)\nEOF" > /etc/welcome/rancher && \
+    chmod +x /etc/welcome/rancher && \
+    echo -n "\nuname -snrvm" >> /etc/welcome/rancher && \
+    rm -r /etc/update-motd.d/10-uname && \
+    \
+    # Adicionando a logo do RancherOS quando executa um novo BASH
+    echo -n "\n/etc/welcome/rancher" >> /etc/bash.bashrc && \
+    \
+    # Adicionando a logo do RancherOS quando executa um novo FISH
+    echo -n "\nfunction fish_greeting\n    bash /etc/welcome/rancher\nend" >> /etc/fish/config.fish && \
+    \
+    # Removendo mensagem do dia
+    echo "" > /etc/motd && \
     \
     # Corrigindo a troca de usuario
     echo -n "#!/bin/bash\n\ndm-tool switch-to-greeter" > /usr/bin/gdmflexiserver && \
     chmod +x /usr/bin/gdmflexiserver && \
-    \
-    # Adicionando a logo do RancherOS quando executa um novo BASH
-    echo -n "\n/etc/update-motd.d/00-header" >> /etc/bash.bashrc && \
-    \
-    # Adicionando a logo do RancherOS quando executa um novo FISH
-    echo -n "\nfunction fish_greeting\n    bash /etc/update-motd.d/00-header\nend" >> /etc/fish/config.fish && \
     \
     # Criando script que toca em /dev/sr0
     echo -n "#!/bin/bash\n\nwhile (true);do\n    touch /dev/sr0\n    sleep 1\ndone" > /usr/local/bin/tocar-sr0 && \
@@ -365,6 +389,10 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo "ros console-init" >> /usr/local/bin/iniciar-tudo && \
     \
     # Alterando as permissoes do script de inicio
-    chmod 100 /usr/local/bin/iniciar-tudo
+    chmod 100 /usr/local/bin/iniciar-tudo && \
+    \
+    # Fazendo uma limpeza
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/* /root/.bash_history && \
+    rm -rf /etc/ssh/*key*
 
 ENTRYPOINT ["/usr/bin/ros", "entrypoint"]
