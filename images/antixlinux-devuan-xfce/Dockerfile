@@ -7,7 +7,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     # Instalando o ca-certificates e adicionando as chaves
     apt update && \
     apt -y -q install ca-certificates wget gnupg1 && \
-    wget http://repo.antixlinux.com/buster/pool/main/a/antix-archive-keyring/antix-archive-keyring_20019.3.13_all.deb -O /antix-archive-keyring.deb && \
+    wget https://mxlinux.unc.edu.ar/mxlinux/antix/buster/pool/main/a/antix-archive-keyring/antix-archive-keyring_20019.3.13_all.deb -O /antix-archive-keyring.deb && \
     dpkg -i /antix-archive-keyring.deb && \
     rm -f /antix-archive-keyring.deb && \
     \
@@ -26,23 +26,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo "deb http://deb.devuan.org/merged beowulf-updates main contrib non-free" >> /etc/apt/sources.list && \
     echo "deb http://deb.devuan.org/merged beowulf-security main contrib non-free" >> /etc/apt/sources.list && \
     echo "deb http://deb.devuan.org/merged beowulf-proposed-updates main contrib non-free" >> /etc/apt/sources.list && \
-    echo "# deb http://deb.devuan.org/merged ascii main" > /etc/apt/sources.list.d/devuan-ascii.list && \
-    \
-    # Adicioanando repositorio do Google Chrome
-    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
-    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    \
-    # Adicionando o repositorio do Vivaldi
-    echo "deb http://repo.vivaldi.com/stable/deb/ stable main" > /etc/apt/sources.list.d/vivaldi.list && \
-    wget -O - http://repo.vivaldi.com/stable/linux_signing_key.pub | apt-key add - && \
-    \
-    # Adicionando o respositorio do Opera
-    echo "deb https://deb.opera.com/opera-stable/ stable non-free" > /etc/apt/sources.list.d/opera-stable.list && \
-    wget -q -O - https://deb.opera.com/archive.key | apt-key add - && \
-    \
-    # Adicionando o repositorio do VirtualBox
-    echo "deb https://download.virtualbox.org/virtualbox/debian buster contrib" > /etc/apt/sources.list.d/virtualbox.list && \
-    wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | apt-key add - && \
     \
     # Adicionando arquitetura 32 bits
     dpkg --add-architecture i386 && \
@@ -53,7 +36,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     \
     # Instalando alguns pacotes iniciais
     apt-get install -y iptables openssh-server rsync locales sudo vim less curl ca-certificates \
-                       psmisc htop kmod iproute2 net-tools gnupg1 wget cron bridge-utils \
+                       psmisc htop kmod iproute2 net-tools gnupg1 wget cron bridge-utils iw \
                        consolekit pulseaudio usbutils pciutils ntp chromium g++ audacity flatpak \
                        chromium-l10n iputils-ping nload nmap whois netcat pavucontrol vlc etherwake \
                        x2goclient ffmpeg curl dialog gdb pulseaudio-equalizer qasmixer qashctl \
@@ -65,8 +48,13 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                        iptraf telnet wireshark aptitude aptitude-robot rsyslog hunspell hunspell-pt-br \
                        aspell-pt-br libreoffice-lightproof-pt-br galculator disk-manager geoclue-2.0 \
                        fbcat lm-sensors terminator sox libsox-fmt-all alsa-utils paprefs prevent-systemd \
-                       adb android-libadb android-tools-adb android-tools-adbd vlc-plugin-access-extra \ 
-                       packagekit-command-not-found apper packagekit-tools && \
+                       adb android-libadb android-tools-adb android-tools-adbd vlc-plugin-access-extra \
+                       policykit-1-gnome gnome-packagekit unattended-upgrades apt-listchanges wireless-tools \
+                       oxygencursors xcursor-themes big-cursor breeze-amber-cursor-theme-antix \
+                       chameleon-cursor-theme comixcursors-lefthanded comixcursors-lefthanded-opaque \
+                       comixcursors-righthanded comixcursors-righthanded-opaque crystalcursors android-tools-fastboot \
+                       wonderland-cursor-theme-antix paper-cursor-theme idevice-mounter ideviceinstaller iotop \
+                       gstreamer1.0-pulseaudio libpam-elogind-compat && \
     \
     # Instalando o lightdm
     apt -y -q install --no-install-recommends lightdm lightdm-gtk-greeter-settings && \
@@ -76,7 +64,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     \
     # Alguns aplicativos do MATE
     apt -y -q install --no-install-recommends mate-system-monitor engrampa pluma && \
-    \
     # Alguns aplicativos do KDE
     apt -y -q install --no-install-recommends okular kcolorchooser kolourpaint && \
     \
@@ -105,8 +92,13 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     # Ativando a biblioteca libdvdnss
     dpkg-reconfigure debconf -f noninteractive libdvd-pkg && \
     \
-    # Adicionar repositorio flathub ao flatpak
+    # Adicionar repositorio flathub e kdeapps ao flatpak
     flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo && \
+    flatpak remote-add --if-not-exists kdeapps https://distribute.kde.org/kdeapps.flatpakrepo && \
+    \
+    # Instalando o dry (uma linha de comando alternativa para o Docker)
+    curl -sSf https://moncho.github.io/dry/dryup.sh | sh && \
+    chmod 755 /usr/local/bin/dry && \
     \
     # Instalando o tema Adapta
     wget jpmsb.sj.ifsc.edu.br/adapta.tar.xz -O /adapta.tar.xz && \
@@ -145,10 +137,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     dpkg -i /webmin.deb && \
     rm -r /webmin.deb && \
     apt update && \
-    \
-    # Cliente em linha de comando para o Google Drive
-    wget "https://docs.google.com/uc?id=0B3X9GlR6EmbnQ0FtZmJJUXEyRTA&export=download" -O /usr/local/bin/gdrive && \
-    chmod 755 /usr/local/bin/gdrive && \
     \
     # Configurar o VIM
     echo -n "set number\nsy on\nset paste\nset background=dark" > /root/.vimrc && \
@@ -295,7 +283,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo '## allow password less for docker user' >> /etc/sudoers && \
     echo 'docker ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers && \
     \
-    # Ajustes no libvirt, adduser, autostart do pulseaudio
+    # Ajustes no libvirt, adduser, autostart do pulseaudio e nm-applet
     sed -i '105s/.*/greeter-hide-users=false/' /etc/lightdm/lightdm.conf && \
     sed -i '85s/.*/unix_sock_group = "rancher"/' /etc/libvirt/libvirtd.conf && \
     sed -i '102s/.*/unix_sock_rw_perms = "0770"/' /etc/libvirt/libvirtd.conf && \
@@ -305,6 +293,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     # sed -i 's.; default-sample-format = s16le.default-sample-format = float32le.g' /etc/pulse/daemon.conf && \
     sed -i 's.; flat-volumes = yes.flat-volumes = no.g' /etc/pulse/daemon.conf && \
     sed -i 's.Exec=start-pulseaudio-x11.Exec=pulseaudio.g' /etc/xdg/autostart/pulseaudio.desktop && \
+    # sed -i 's.Exec=nm-applet.Exec=nm-applet -9.g' /etc/xdg/autostart/nm-applet.desktop && \
     \
     # Regra para o login1
     echo "[Login1]" > /etc/polkit-1/localauthority/50-local.d/23-org.freedesktop.login1.pkla && \
@@ -389,7 +378,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo "service cups-browsed start" >> /usr/local/bin/iniciar-tudo && \
     echo "modprobe -r evbug" >> /usr/local/bin/iniciar-tudo && \
     echo 'echo "0 2147483647" > /proc/sys/net/ipv4/ping_group_range' >> /usr/local/bin/iniciar-tudo && \
-    echo "service cron start" >> /usr/local/bin/iniciar-tudo && \
+    echo "cron" >> /usr/local/bin/iniciar-tudo && \
     echo "ntpd" >> /usr/local/bin/iniciar-tudo && \
     echo 'sleep 2 && bash -c "/etc/init.d/lightdm start" &' >> /usr/local/bin/iniciar-tudo && \
     echo "ros console-init" >> /usr/local/bin/iniciar-tudo && \
