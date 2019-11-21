@@ -12,6 +12,7 @@ console:
   volumes:
   - /media:/media:shared
   - /mnt:/mnt:shared
+  - /boot:/boot:shared
   restart: always
   pid: host
   ipc: host
