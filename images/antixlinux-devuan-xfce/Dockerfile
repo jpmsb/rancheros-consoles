@@ -54,7 +54,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                        chameleon-cursor-theme comixcursors-lefthanded comixcursors-lefthanded-opaque \
                        comixcursors-righthanded comixcursors-righthanded-opaque crystalcursors android-tools-fastboot \
                        wonderland-cursor-theme-antix paper-cursor-theme idevice-mounter ideviceinstaller iotop \
-                       gstreamer1.0-pulseaudio libpam-elogind-compat && \
+                       gstreamer1.0-pulseaudio libpam-elogind-compat zip pulseaudio-module-raop sshfs && \
     \
     # Instalando o lightdm
     apt -y -q install --no-install-recommends lightdm lightdm-gtk-greeter-settings && \
@@ -104,6 +104,11 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     wget jpmsb.sj.ifsc.edu.br/adapta.tar.xz -O /adapta.tar.xz && \
     tar -xvf /adapta.tar.xz -C /usr/share/themes/ && \
     rm -r /adapta.tar.xz && \
+    \
+    # Instalando a Loja App Outlet
+    wget https://appoutlet.herokuapp.com/download/deb -O /app-outlet.deb && \
+    apt -y -q install libappindicator3-1 && \
+    dpkg -i /app-outlet.deb && \
     \
     # Fonte Open Sans
     wget "https://fonts.google.com/download?family=Open%20Sans|Open%20Sans%20Condensed" -O open-sans.zip && \
@@ -185,6 +190,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo "ScrollingUnlimited=TRUE" >> /etc/skel/.config/xfce4/terminal/terminalrc && \
     echo "ScrollingOnOutput=FALSE" >> /etc/skel/.config/xfce4/terminal/terminalrc && \
     \
+    # Definindo o xfce4-terminal como terminal padrão
+    update-alternatives --set x-terminal-emulator /usr/bin/xfce4-terminal.wrapper && \
+    \
     # Habilitando trocar usuario no protetor de tela
     echo "xscreensaver.newLoginCommand: dm-tool switch-to-greeter" > /etc/skel/.Xresources && \
     \
@@ -245,6 +253,10 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo "update-alternatives --install /usr/bin/wsimport wsimport /usr/lib/jvm/java-8-oracle/bin/wsimport 180" >> /usr/local/bin/instalar-java-8-oracle && \
     echo "update-alternatives --install /usr/bin/xjc xjc /usr/lib/jvm/java-8-oracle/bin/xjc 180" >> /usr/local/bin/instalar-java-8-oracle && \
     echo "update-java-alternatives -s java-8-oracle" >> /usr/local/bin/instalar-java-8-oracle && \
+    \
+    # Atualizar o Mozilla Firefox
+    wget https://raw.githubusercontent.com/jpmsb/dicas/master/atualiza-firefox -O /usr/local/bin/atualiza-firefox && \
+    chmod +x /usr/local/bin/atualiza-firefox && \
     \
     # Definindo o layout de teclado para ABNT 2
     mkdir -p /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/ && \
