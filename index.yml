@@ -1,3 +1,6 @@
 consoles:
-- antixlinux-devuan-xfce
+- antixlinux-devuan-xfce-pt_BR
+- antixlinux-devuan-xfce-en_US
+- antixlinux-devuan-xfce-jp_JP
+- antixlinux-devuan-xfce-es_ES
 - debian-stretch-xfce
