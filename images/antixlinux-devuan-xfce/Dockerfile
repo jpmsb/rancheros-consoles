@@ -36,12 +36,12 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     \
     # Instalando alguns pacotes iniciais
     apt-get install -y iptables openssh-server rsync locales sudo vim less curl ca-certificates \
-                       psmisc htop kmod iproute2 net-tools gnupg1 wget cron bridge-utils iw \
-                       consolekit pulseaudio usbutils pciutils ntp chromium g++ audacity flatpak \
+                       psmisc htop kmod iproute2 net-tools gnupg1 wget cron bridge-utils iw gconf2 \
+                       pulseaudio usbutils pciutils ntp chromium g++ audacity flatpak oxygencursors \
                        chromium-l10n iputils-ping nload nmap whois netcat pavucontrol vlc etherwake \
-                       x2goclient ffmpeg curl dialog gdb pulseaudio-equalizer qasmixer qashctl \
+                       x2goclient ffmpeg curl dialog gdb pulseaudio-equalizer qasmixer qashctl libvirt0 \
                        qasconfig wine32 winetricks git cmake rtl-sdr dirmngr libelf-dev xterm mtp-tools \
-                       virt-manager qemu unrar lzop bzip2 libvirt0 libvirt-daemon-system dnsutils \
+                       virt-manager unrar lzop bzip2 libvirt-daemon-system dnsutils ttf-mscorefonts-installer \
                        qemu qemu-kvm qemu-utils gvfs-backends nomacs nomacs-l10n openresolv cups \ 
                        apt-transport-https fonts-noto fonts-roboto-hinted gdebi apt-utils libglib2.0-bin \
                        xscreensaver-screensaver-bsod arp-scan speedtest-cli tcpdump traceroute iperf \
@@ -50,11 +50,11 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                        fbcat lm-sensors terminator sox libsox-fmt-all alsa-utils paprefs prevent-systemd \
                        adb android-libadb android-tools-adb android-tools-adbd vlc-plugin-access-extra \
                        policykit-1-gnome gnome-packagekit unattended-upgrades apt-listchanges wireless-tools \
-                       oxygencursors xcursor-themes big-cursor breeze-amber-cursor-theme-antix \
-                       chameleon-cursor-theme comixcursors-lefthanded comixcursors-lefthanded-opaque \
+                       xcursor-themes big-cursor breeze-amber-cursor-theme-antix kmod libpolkit-backend-elogind-1-0 \
+                       chameleon-cursor-theme comixcursors-lefthanded comixcursors-lefthanded-opaque initramfs-tools \
                        comixcursors-righthanded comixcursors-righthanded-opaque crystalcursors android-tools-fastboot \
                        wonderland-cursor-theme-antix paper-cursor-theme idevice-mounter ideviceinstaller iotop \
-                       gstreamer1.0-pulseaudio libpam-elogind-compat zip pulseaudio-module-raop sshfs && \
+                       gstreamer1.0-pulseaudio libpam-elogind-compat zip pulseaudio-module-raop sshfs grub-pc && \
     \
     # Instalando o lightdm
     apt -y -q install --no-install-recommends lightdm lightdm-gtk-greeter-settings && \
@@ -97,8 +97,10 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     flatpak remote-add --if-not-exists kdeapps https://distribute.kde.org/kdeapps.flatpakrepo && \
     \
     # Instalando o dry (uma linha de comando alternativa para o Docker)
-    curl -sSf https://moncho.github.io/dry/dryup.sh | sh && \
+    wget https://moncho.github.io/dry/dryup.sh -O /dry.sh && \
+    bash /dry.sh && \
     chmod 755 /usr/local/bin/dry && \
+    rm -f /dry.sh && \
     \
     # Instalando o tema Adapta
     wget jpmsb.sj.ifsc.edu.br/adapta.tar.xz -O /adapta.tar.xz && \
@@ -109,6 +111,28 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     wget https://appoutlet.herokuapp.com/download/deb -O /app-outlet.deb && \
     apt -y -q install libappindicator3-1 && \
     dpkg -i /app-outlet.deb && \
+    rm -rf /app-outlet.deb && \
+    mv /opt/App\ Outlet /var/opt/ && \
+    sed -i 's.Exec="/opt/App Outlet/app-outlet" %U.Exec="/var/opt/App Outlet/app-outlet" %U.g' /usr/share/applications/app-outlet.desktop && \
+    \
+    # Instalando o WPS Office
+    wget http://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linux/8865/wps-office_11.1.0.8865_amd64.deb -O /wps-office.deb && \
+    dpkg -i /wps-office.deb && \
+    rm -rf /wps-office.deb && \
+    mv /opt/kingsoft /var/opt/ && \
+    sed -i 's.gInstallPath=/opt/kingsoft/wps-office.gInstallPath=/var/opt/kingsoft/wps-office.g' /usr/bin/et && \
+    sed -i 's.gInstallPath=/opt/kingsoft/wps-office.gInstallPath=/var/opt/kingsoft/wps-office.g' /usr/bin/wpp && \
+    sed -i 's.gInstallPath=/opt/kingsoft/wps-office.gInstallPath=/var/opt/kingsoft/wps-office.g' /usr/bin/wpspdf && \
+    sed -i 's.gInstallPath=/opt/kingsoft/wps-office.gInstallPath=/var/opt/kingsoft/wps-office.g' /usr/bin/wps && \
+    \
+    # Instalando as fontes Webdings 1, Webdings 2, Webdings 3, mtextra, Symbol e Wingding
+    wget https://github.com/IamDH4/ttf-wps-fonts/raw/master/WEBDINGS.TTF -O /usr/share/fonts/truetype/msttcorefonts/WEBDINGS.TTF && \
+    wget https://github.com/IamDH4/ttf-wps-fonts/raw/master/WINGDNG2.ttf -O /usr/share/fonts/truetype/msttcorefonts/WINGDNG2.ttf && \
+    wget https://github.com/IamDH4/ttf-wps-fonts/raw/master/WINGDNG3.ttf -O /usr/share/fonts/truetype/msttcorefonts/WINGDNG3.ttf && \
+    wget https://github.com/IamDH4/ttf-wps-fonts/raw/master/symbol.ttf -O /usr/share/fonts/truetype/msttcorefonts/symbol.ttf && \
+    wget https://github.com/IamDH4/ttf-wps-fonts/raw/master/mtextra.ttf -O /usr/share/fonts/truetype/msttcorefonts/mtextra.ttf && \
+    wget https://github.com/IamDH4/ttf-wps-fonts/raw/master/wingding.ttf -O /usr/share/fonts/truetype/msttcorefonts/wingding.ttf && \
+    fc-cache -vfs && \
     \
     # Fonte Open Sans
     wget "https://fonts.google.com/download?family=Open%20Sans|Open%20Sans%20Condensed" -O open-sans.zip && \
@@ -392,6 +416,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo 'echo "0 2147483647" > /proc/sys/net/ipv4/ping_group_range' >> /usr/local/bin/iniciar-tudo && \
     echo "cron" >> /usr/local/bin/iniciar-tudo && \
     echo "ntpd" >> /usr/local/bin/iniciar-tudo && \
+    echo "usbmuxd" >> /usr/local/bin/iniciar-tudo && \
     echo 'sleep 2 && bash -c "/etc/init.d/lightdm start" &' >> /usr/local/bin/iniciar-tudo && \
     echo "ros console-init" >> /usr/local/bin/iniciar-tudo && \
     \
