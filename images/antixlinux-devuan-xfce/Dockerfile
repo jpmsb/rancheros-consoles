@@ -42,9 +42,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                        x2goclient ffmpeg curl dialog gdb pulseaudio-equalizer qasmixer qashctl libvirt0 \
                        qasconfig wine32 winetricks git cmake rtl-sdr dirmngr libelf-dev xterm mtp-tools \
                        virt-manager unrar lzop bzip2 libvirt-daemon-system dnsutils ttf-mscorefonts-installer \
-                       qemu qemu-kvm qemu-utils gvfs-backends nomacs nomacs-l10n openresolv cups \ 
+                       qemu qemu-kvm qemu-utils gvfs-backends nomacs nomacs-l10n openresolv cups smartmoontools \ 
                        apt-transport-https fonts-noto fonts-roboto-hinted gdebi apt-utils libglib2.0-bin \
-                       xscreensaver-screensaver-bsod arp-scan speedtest-cli tcpdump traceroute iperf \
+                       xscreensaver-screensaver-bsod arp-scan speedtest-cli tcpdump traceroute iperf at \
                        iptraf telnet wireshark aptitude aptitude-robot rsyslog hunspell hunspell-pt-br \
                        aspell-pt-br libreoffice-lightproof-pt-br galculator disk-manager geoclue-2.0 \
                        fbcat lm-sensors terminator sox libsox-fmt-all alsa-utils paprefs prevent-systemd \
