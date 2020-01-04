@@ -53,8 +53,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                        xcursor-themes big-cursor breeze-amber-cursor-theme-antix kmod libpolkit-backend-elogind-1-0 \
                        chameleon-cursor-theme comixcursors-lefthanded comixcursors-lefthanded-opaque initramfs-tools \
                        comixcursors-righthanded comixcursors-righthanded-opaque crystalcursors android-tools-fastboot \
-                       wonderland-cursor-theme-antix paper-cursor-theme idevice-mounter ideviceinstaller iotop \
-                       gstreamer1.0-pulseaudio libpam-elogind-compat zip pulseaudio-module-raop sshfs grub-pc && \
+                       wonderland-cursor-theme-antix paper-cursor-theme idevice-mounter ideviceinstaller iotop rfkill \
+                       gstreamer1.0-pulseaudio libpam-elogind-compat zip pulseaudio-module-raop sshfs bluez && \
     \
     # Instalando o lightdm
     apt -y -q install --no-install-recommends lightdm lightdm-gtk-greeter-settings && \
@@ -64,6 +64,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     \
     # Alguns aplicativos do MATE
     apt -y -q install --no-install-recommends mate-system-monitor engrampa pluma && \
+    \
     # Alguns aplicativos do KDE
     apt -y -q install --no-install-recommends okular kcolorchooser kolourpaint && \
     \
@@ -139,6 +140,14 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     unzip open-sans.zip -d /usr/share/fonts/opentype/ && \
     rm -f open-sans.zip && \
     \
+    # Adicionando o repositório do Google Chrome
+    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
+    \
+    # Cliente em linha de comando para o Google Drive
+    wget "https://docs.google.com/uc?id=0B3X9GlR6EmbnQ0FtZmJJUXEyRTA&export=download" -O /usr/local/bin/gdrive && \
+    chmod 755 /usr/local/bin/gdrive && \
+    \
     # Fonte Noto com Nerd Fonts
     mkdir /usr/share/fonts/Nerd-Fonts/ && \
     wget https://jpmsb.sj.ifsc.edu.br/Noto.zip -O /Noto.zip && \
@@ -162,7 +171,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     rm /var/lib/apt/lists/*lz4 && \
     apt-get -o Acquire::GzipIndexes=false update && \
     apt -y -q install libauthen-pam-perl apt-show-versions && \
-    wget https://ufpr.dl.sourceforge.net/project/webadmin/webmin/1.930/webmin_1.930_all.deb -O /webmin.deb && \
+    wget https://ufpr.dl.sourceforge.net/project/webadmin/webmin/1.940/webmin_1.940_all.deb -O /webmin.deb && \
     dpkg -i /webmin.deb && \
     rm -r /webmin.deb && \
     apt update && \
@@ -311,7 +320,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     # Criando usuarios
     addgroup --gid 1100 rancher && \
     addgroup --gid 1101 docker && \
-    useradd -u 1100 -g rancher -G docker,sudo,plugdev,dialout,audio,video,netdev -c "Rancher,,," -m -s /bin/bash rancher && \
+    useradd -u 1100 -g rancher -G docker,sudo,plugdev,dialout,audio,video,netdev,libvirt -c "Rancher,,," -m -s /bin/bash rancher && \
     useradd -u 1101 -g docker -G docker,sudo -c "Docker,,," -m -s /bin/bash docker && \
     echo ClientAliveInterval 180 >> /etc/ssh/sshd_config && \
     echo '## allow password less for rancher user' >> /etc/sudoers && \
@@ -321,10 +330,10 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     \
     # Ajustes no libvirt, adduser, autostart do pulseaudio e nm-applet
     sed -i '105s/.*/greeter-hide-users=false/' /etc/lightdm/lightdm.conf && \
-    sed -i '85s/.*/unix_sock_group = "rancher"/' /etc/libvirt/libvirtd.conf && \
+    sed -i '85s/.*/unix_sock_group = "libvirt"/' /etc/libvirt/libvirtd.conf && \
     sed -i '102s/.*/unix_sock_rw_perms = "0770"/' /etc/libvirt/libvirtd.conf && \
     sed -i '6s:.*:DSHELL=/usr/bin/fish:' /etc/adduser.conf && \
-    sed -i '77s:.*:EXTRA_GROUPS="dialout cdrom audio video plugdev netdev sudo":' /etc/adduser.conf && \
+    sed -i '77s:.*:EXTRA_GROUPS="dialout cdrom audio video plugdev netdev sudo libvirt":' /etc/adduser.conf && \
     sed -i '81s:.*:ADD_EXTRA_GROUPS=1:' /etc/adduser.conf && \
     # sed -i 's.; default-sample-format = s16le.default-sample-format = float32le.g' /etc/pulse/daemon.conf && \
     sed -i 's.; flat-volumes = yes.flat-volumes = no.g' /etc/pulse/daemon.conf && \
@@ -417,6 +426,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo "cron" >> /usr/local/bin/iniciar-tudo && \
     echo "ntpd" >> /usr/local/bin/iniciar-tudo && \
     echo "usbmuxd" >> /usr/local/bin/iniciar-tudo && \
+    echo "bluetoothd &" >> /usr/local/bin/iniciar-tudo && \
     echo 'sleep 2 && bash -c "/etc/init.d/lightdm start" &' >> /usr/local/bin/iniciar-tudo && \
     echo "ros console-init" >> /usr/local/bin/iniciar-tudo && \
     \
