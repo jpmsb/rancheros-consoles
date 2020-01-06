@@ -421,6 +421,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo "service network-manager start" >> /usr/local/bin/iniciar-tudo && \
     echo "service cups start" >> /usr/local/bin/iniciar-tudo && \
     echo "service cups-browsed start" >> /usr/local/bin/iniciar-tudo && \
+    echo "service earlyoom start" >> /usr/local/bin/iniciar-tudo && \
     echo "modprobe -r evbug" >> /usr/local/bin/iniciar-tudo && \
     echo 'echo "0 2147483647" > /proc/sys/net/ipv4/ping_group_range' >> /usr/local/bin/iniciar-tudo && \
     echo "cron" >> /usr/local/bin/iniciar-tudo && \
