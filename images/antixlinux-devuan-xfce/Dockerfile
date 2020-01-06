@@ -46,7 +46,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                        apt-transport-https fonts-noto fonts-roboto-hinted gdebi apt-utils libglib2.0-bin \
                        xscreensaver-screensaver-bsod arp-scan speedtest-cli tcpdump traceroute iperf at \
                        iptraf telnet wireshark aptitude aptitude-robot rsyslog hunspell hunspell-pt-br \
-                       aspell-pt-br libreoffice-lightproof-pt-br galculator disk-manager geoclue-2.0 \
+                       aspell-pt-br libreoffice-lightproof-pt-br galculator disk-manager geoclue-2.0 stunnel4 \
                        fbcat lm-sensors terminator sox libsox-fmt-all alsa-utils paprefs prevent-systemd \
                        adb android-libadb android-tools-adb android-tools-adbd vlc-plugin-access-extra \
                        policykit-1-gnome gnome-packagekit unattended-upgrades apt-listchanges wireless-tools \
